@@ -344,6 +344,67 @@ class CompressionApp:
 - **تابع `decrypt`**: این تابع فایل‌های انتخاب‌شده را رمزگشایی می‌کند.
 - **تابع `open_github`**: این تابع لینک مخزن GitHub را باز می‌کند.
 
+
+
+### توضیحات درباره کتابخانه `tarfile` و استفاده آن در پروژه
+
+#### کتابخانه `tarfile`
+کتابخانه `tarfile` یکی از کتابخانه‌های استاندارد پایتون است که برای کار با فایل‌های بایگانی (archive files) با فرمت tar استفاده می‌شود. این کتابخانه به شما اجازه می‌دهد تا فایل‌ها و دایرکتوری‌ها را در یک فایل tar فشرده و یا از آن خارج کنید. فایل‌های tar به طور گسترده‌ای برای انتقال دسته‌ای از فایل‌ها استفاده می‌شوند، مخصوصاً در سیستم‌های مبتنی بر یونیکس.
+
+#### استفاده از `tarfile` در این پروژه
+
+در این پروژه، از کتابخانه `tarfile` برای فشرده‌سازی چندین فایل به یک فایل tar و استخراج فایل‌ها از آن استفاده شده است. این کار به سادگی مدیریت و انتقال فایل‌ها کمک می‌کند.
+
+##### نمونه‌های کد استفاده از `tarfile`
+
+1. **فشرده‌سازی فایل‌ها به یک فایل tar**
+
+   در تابع `compress_files` در فایل `gui.py`، از `tarfile` برای ایجاد یک فایل tar و افزودن فایل‌های فشرده‌شده به آن استفاده می‌شود:
+
+   ```python
+   def compress_files(self, input_files, output_file, method="huffman"):
+       try:
+           with tarfile.open(output_file, "w") as tar:
+               for input_file in input_files:
+                   compressed_file = input_file + ".compressed"
+                   if method == "huffman":
+                       huffman.compress_file(input_file, compressed_file)
+                   elif method == "zlib":
+                       compression.compress_file(input_file, compressed_file)
+                   tar.add(compressed_file, arcname=os.path.basename(compressed_file))
+                   os.remove(compressed_file)
+       except Exception as e:
+           print(f"Error during compression: {e}")
+   ```
+
+   در این بخش، فایل‌های ورودی ابتدا فشرده می‌شوند و سپس به فایل tar اضافه می‌گردند. پس از افزودن به فایل tar، فایل‌های فشرده موقت حذف می‌شوند.
+
+2. **استخراج فایل‌ها از یک فایل tar**
+
+   در تابع `decompress_files` در فایل `gui.py`، از `tarfile` برای استخراج فایل‌ها از یک فایل tar استفاده می‌شود:
+
+   ```python
+   def decompress_files(self, input_file, output_dir, method="huffman"):
+       try:
+           with tarfile.open(input_file, "r") as tar:
+               tar.extractall(path=output_dir)
+               for member in tar.getmembers():
+                   compressed_file = os.path.join(output_dir, member.name)
+                   decompressed_file = os.path.splitext(compressed_file)[0]
+                   if method == "huffman":
+                       huffman.decompress_file(compressed_file, decompressed_file)
+                   elif method == "zlib":
+                       compression.decompress_file(compressed_file, decompressed_file)
+                   os.remove(compressed_file)
+       except Exception as e:
+           print(f"Error during decompression: {e}")
+   ```
+
+   در این بخش، فایل tar استخراج می‌شود و سپس فایل‌های فشرده‌شده باز می‌شوند. پس از باز کردن فشرده‌سازی، فایل‌های فشرده موقت حذف می‌شوند.
+
+
+
+
 ### نتیجه‌گیری
 
 این پروژه شامل پیاده‌سازی الگوریتم‌های فشرده‌سازی و رمزنگاری فایل‌ها با استفاده از کتابخانه‌های مختلف پایتون است. رابط کاربری گرافیکی ایجاد شده با استفاده از tkinter به شما اجازه می‌دهد تا به سادگی فایل‌های خود را فشرده‌سازی، باز کردن فایل های فشرده‌سازی شده، رمزنگاری و رمزگشایی کنند.
