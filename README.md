@@ -1,4 +1,5 @@
-# compression
+# Compression & Encryption
+# A Python Application for Compress and Encrypt files
 ## برنامه فشرده سازی و رمزنگاری فایل ها به زبان پایتون
 
 این پروژه شامل فشرده‌سازی و رمزنگاری فایل‌ها با استفاده از دو الگوریتم مختلف برای فشرده‌سازی (Huffman و zlib) و یک روش رمزنگاری متقارن است.
